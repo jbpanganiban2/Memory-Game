@@ -2,17 +2,21 @@
 Memory Game for ICS-OS
 --------------------------------
 
-1. Extract from within ics-os source dir.
+1. 	Copy the folder 'memory' to 'ics-os/contrib' directory 	
 
-   $tar xzvf memory.tar.gz
-   $cd contrib/memory
-   $make
-   $make install
+2. 	Go to 'ics-os/contrib/memory' directory
+		$make install 
 
-2. Perform the steps to install ics-os.
-   $cd ../..
-   $sudo make install 
+3. 	Go back to 'ics-os' directory
+		$make floppy
+		$make boot-floppy
 
-3. Run memory.exe inside ics-os
+4. 	Run memory.exe inside ics-os
+		$memory.exe
 
-Enjoy!
+
+Mark Gabriel M. Mataya 2015-07598
+Joshua B. Panganiban 2015-05341
+
+
+
