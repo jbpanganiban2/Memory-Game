@@ -25,6 +25,12 @@ void print_board(); //prints the board
 void highlight(int x, int y); //highlights the current tile
 void show_score(); //shows score
 void reset(); //reset the configuration of the board
+void easy_highscores();
+void normal_highscores();
+void hard_highscores();
+void insert_highscore();
+void ask_name();
+void game_winner();
 
 #define MAX_ROW 8
 #define MAX_COL 8
@@ -52,7 +58,9 @@ int y_coordinates[MAX_ROW][MAX_COL]; //2d array that contains the x_coordinates 
 int easy_score[5];
 int normal_score[5];
 int hard_score[5];
-char highscore_names[5][3];
+char easy_names[5][3];
+char normal_names[5][3];
+char hard_names[5][3];
 int curr_row, curr_col, old_row, old_col;
 int level;
 int row_limit, col_limit;
@@ -83,6 +91,7 @@ int main(){
 				if(keypress==easy_level || keypress==normal_level || keypress==hard_level){ 
 					// if the player chose a level, the gameplay will start
 					erase(1,1,400,220);
+					panel(1,1,115,197);
 					reset();
 					do{
 						
@@ -279,9 +288,9 @@ int main(){
 								pair1_symbol =0;
 								pair2_symbol =0;
 								//block the score with black rectangles
-								rectangle(20,20,65);
-								rectangle(40,20,65);
-								rectangle(60,20,65);
+								rectangle(20,20,35);
+								rectangle(40,20,35);
+								rectangle(60,20,35);
 								show_score();
 							}
 						}
@@ -291,6 +300,7 @@ int main(){
 						}
 						if(correct==((row_limit*col_limit)/2)){ //if all the tiles are correctly guessed, end game
 							game_winner();
+							panel(1,1,115,197);
 							reset();
 							show_score();
 						}
@@ -342,50 +352,63 @@ int main(){
 
 }
 
+
 void easy_highscores(){
 	int i,j,x_pos=100,y_pos=40;
 
 	char string[5];
-	write_text("HIGHSCORES",150,25,45,1);
+	write_text("HIGHSCORES",120,25,45,1);
 	for(i=0;i<5;i++){
 		if(easy_score[i]==0) break;
 
 		sprintf(string,"%d",easy_score[i]);
 		write_text(string,200,y_pos,45,1);
 		for(j=0;j<3;j++){
-			sprintf(string,"%c",highscore_names[i][j]);
+			sprintf(string,"%c",easy_names[i][j]);
 			write_text(string,x_pos,y_pos,45,1);	
 			x_pos+=15;
 		}
-		x_pos=0;
+		x_pos=100;
 		y_pos+=20;
 	}
 	write_text("X - EXIT",120,180,45,0);
 }
 void normal_highscores(){
-	int i,y_pos=40;
+	int i,j,x_pos=100,y_pos=40;
 
 	char string[5];
-	write_text("HIGHSCORES",150,25,45,1);
+	write_text("HIGHSCORES",120,25,45,1);
 	for(i=0;i<5;i++){
 		if(normal_score[i]==0) break;
 
 		sprintf(string,"%d",normal_score[i]);
-		write_text(string,100,y_pos,45,1);
+		write_text(string,200,y_pos,45,1);
+		for(j=0;j<3;j++){
+			sprintf(string,"%c",normal_names[i][j]);
+			write_text(string,x_pos,y_pos,45,1);	
+			x_pos+=15;
+		}
+		x_pos=100;
 		y_pos+=20;
 	}
 	write_text("X - EXIT",120,180,45,0);
 }
 void hard_highscores(){
-	int i,y_pos=40;
+	int i,j,x_pos=100,y_pos=40;
 
 	char string[5];
-	write_text("HIGHSCORES",150,25,45,1);
+	write_text("HIGHSCORES",120,25,45,1);
 	for(i=0;i<5;i++){
 		if(hard_score[i]==0) break;
 
 		sprintf(string,"%d",hard_score[i]);
-		write_text(string,100,y_pos,45,1);
+		write_text(string,200,y_pos,45,1);
+		for(j=0;j<3;j++){
+			sprintf(string,"%c",hard_names[i][j]);
+			write_text(string,x_pos,y_pos,45,1);	
+			x_pos+=15;
+		}
+		x_pos=100;
 		y_pos+=20;
 	}
 	write_text("X - EXIT",120,180,45,0);
@@ -394,33 +417,39 @@ void hard_highscores(){
 
 void insert_highscore(){
 	char temp[3],temp1[3];
-	int i,a,b;
+	int i,j,a,b;
 	if(level==EASY){
 		for(i=0;i<5;i++){
 			if(score>=easy_score[i]){
 				a=easy_score[i];
 				easy_score[i]=score;
-				memset(temp,0,strlen(temp));
-				strcpy(temp,highscore_names[i]);
-				memset(highscore_names[i],0,strlen(highscore_names[i]));
-				strcpy(highscore_names[i],name);
+				
+				for(j=0;j<3;j++){
+					temp[j]=easy_names[i][j];
+				}
+				for(j=0;j<3;j++){
+					easy_names[i][j]=name[j];
+				}
 				break;
 			}
 		}
 		while(i<5){
 			b = a;
-			memset(temp1,0,strlen(temp1));
-			strcpy(temp1,temp);
+			for(j=0;j<3;j++){
+				temp1[j]=temp[j];
+			}
 			if(i+1!=5){
 				a=easy_score[i+1];
-				memset(temp,0,strlen(temp));
-				strcpy(temp,highscore_names[i+1]);
+				for(j=0;j<3;j++){
+					temp[j]=easy_names[i+1][j];
+				}
 			}
 			else break;
 			i++;
 			easy_score[i]=b;
-			memset(highscore_names[i],0,strlen(highscore_names[i]));
-			strcpy(highscore_names[i],temp1);
+			for(j=0;j<3;j++){
+				easy_names[i][j]=temp1[j];
+			}
 		}
 
 	}
@@ -429,42 +458,79 @@ void insert_highscore(){
 			if(score>=normal_score[i]){
 				a=normal_score[i];
 				normal_score[i]=score;
+				
+				for(j=0;j<3;j++){
+					temp[j]=normal_names[i][j];
+				}
+				for(j=0;j<3;j++){
+					normal_names[i][j]=name[j];
+				}
 				break;
 			}
 		}
 		while(i<5){
 			b = a;
-			if(i+1!=5)a=normal_score[i+1];
+			for(j=0;j<3;j++){
+				temp1[j]=temp[j];
+			}
+			if(i+1!=5){
+				a=normal_score[i+1];
+				for(j=0;j<3;j++){
+					temp[j]=normal_names[i+1][j];
+				}
+			}
 			else break;
 			i++;
 			normal_score[i]=b;
+			for(j=0;j<3;j++){
+				normal_names[i][j]=temp1[j];
+			}
 		}
+
 	}
 	else if(level==HARD){
 		for(i=0;i<5;i++){
 			if(score>=hard_score[i]){
 				a=hard_score[i];
 				hard_score[i]=score;
+				
+				for(j=0;j<3;j++){
+					temp[j]=hard_names[i][j];
+				}
+				for(j=0;j<3;j++){
+					hard_names[i][j]=name[j];
+				}
 				break;
 			}
 		}
 		while(i<5){
 			b = a;
-			if(i+1!=5)a=hard_score[i+1];
+			for(j=0;j<3;j++){
+				temp1[j]=temp[j];
+			}
+			if(i+1!=5){
+				a=hard_score[i+1];
+				for(j=0;j<3;j++){
+					temp[j]=hard_names[i+1][j];
+				}
+			}
 			else break;
 			i++;
 			hard_score[i]=b;
+			for(j=0;j<3;j++){
+				hard_names[i][j]=temp1[j];
+			}
 		}
-	}
 
+	}
 }
 
 
 void reset(){
 	//block the score with black rectangles
-	rectangle(20,20,65);
-	rectangle(40,20,65);
-	rectangle(60,20,65);
+	rectangle(20,20,35);
+	rectangle(40,20,35);
+	rectangle(60,20,35);
 	
 	initialize_board();
 	set_symbols();
@@ -494,8 +560,8 @@ void ask_name(){
 	int index=0;
 	int name_xpos=20;
 	name[3]='\0';
-	write_text("ENTER NAME",10,90,45,0);
-	write_text("___",40,100,45,1);
+	write_text("ENTER NAME",15,90,45,0);
+	write_text("___",45,100,45,1);
 	do{
 		keypress=(char)getch();
 		if((keypress=='a'||keypress=='b'||keypress=='c'||keypress=='d'||keypress=='e'||keypress=='f'||keypress=='g'||keypress=='h'||keypress=='i'||keypress=='j'||keypress=='k'||keypress=='l'||keypress=='m'||keypress=='n'||keypress=='o'||keypress=='p'||keypress=='q'||keypress=='r'||keypress=='s'||keypress=='t'||keypress=='u'||keypress=='v'||keypress=='w'||keypress=='x'||keypress=='y'||keypress=='z'||keypress=='A'||keypress=='B'||keypress=='C'||keypress=='D'||keypress=='E'||keypress=='F'||keypress=='G'||keypress=='H'||keypress=='I'||keypress=='J'||keypress=='K'||keypress=='L'||keypress=='M'||keypress=='N'||keypress=='O'||keypress=='P'||keypress=='Q'||keypress=='R'||keypress=='S'||keypress=='T'||keypress=='U'||keypress=='V'||keypress=='X'||keypress=='Y'||keypress=='Z'||keypress=='W'||keypress=='1'||keypress=='2'||keypress=='3'||keypress=='4'||keypress=='5'||keypress=='6'||keypress=='7'||keypress=='8'||keypress=='9'||keypress=='0') && index<3){
@@ -551,26 +617,33 @@ void game_winner(){
 		}
 	}
 	delay(10);
-	erase(1,1,95,220); 	//erase control's side
+	erase(1,1,115,220); 	//erase control's side
 	if((level==EASY && score>=easy_score[4]) || (level==NORMAL && score>=normal_score[4]) || (level==HARD && score>=hard_score[4])){
 		write_text("NEW",1,35,45,1);
 		write_text("HIGHSCORE!",30,35,45,1);
 		sprintf(string,"%d",score);
-		write_text(string,40,55,45,1);
+		write_text(string,45,55,45,1);
 		ask_name();
 	}
 	else{
 		write_text("YOUR SCORE",12,40,45,1);
 		sprintf(string,"%d",score);
 		write_text(string,40,65,45,1);
+
+		
+		write_text("PRESS ANY",20,130,45,1);
+		write_text("KEY",45,145,45,1);
+		keypress=(char)getch();
+		keypress='a';
 	}
+
 	erase(1,1,115,220); 	//erase control's side
 }
 
 void show_score(){
 	char string[10];
 	sprintf(string,"%d",score);
-	write_text(string,20,20,45,1);
+	write_text(string,43,20,63,1);
 }
 
 void face_up(int row, int col, int color){
@@ -755,36 +828,36 @@ void set_coordinates(){
 	int i, j, a, b;
 
 	if(level==EASY){
-		a=120;
+		a=180;
 		b=50;
 		for(i=0; i<row_limit; i++, b+=23){
 			for(j=0; j<col_limit; j++, a+=23){
 				x_coordinates[i][j] = a;
 				y_coordinates[i][j] = b;
 			}
-			a=120;
+			a=180;
 		}
 	}
 	else if(level==NORMAL){
-		a=120;
+		a=150;
 		b=30;
 		for(i=0; i<row_limit; i++, b+=23){
 			for(j=0; j<col_limit; j++, a+=23){
 				x_coordinates[i][j] = a;
 				y_coordinates[i][j] = b;
 			}
-			a=120;
+			a=150;
 		}
 	}
 	else if(level==HARD){
-		a=120;
+		a=128;
 		b=10;
 		for(i=0; i<row_limit; i++, b+=23){
 			for(j=0; j<col_limit; j++, a+=23){
 				x_coordinates[i][j] = a;
 				y_coordinates[i][j] = b;
 			}
-			a=120;
+			a=128;
 		}
 	}
 }
@@ -799,16 +872,17 @@ void initialize_board(){
 }
 
 void print_controls(){
-	write_text("SCORE",10,5,45,1);
-	write_text("W-UP",10,50,45,0);
-	write_text("S-DOWN",10,65,45,0);
-	write_text("D-RIGHT",10,80,45,0);
-	write_text("A-LEFT",10,95,45,0);
-	write_text("F-FLIP",10,110,45,0);
-	write_text("R-RESET",10,125,45,0);
-	write_text("L-CHANGE",10,140,45,0);
-	write_text("LEVEL",30,150,45,0);
-	write_text("X-EXIT",10,165,45,0);
+
+	write_text("SCORE",35,5,63,1);
+	write_text("W-UP",15,50,63,0);
+	write_text("S-DOWN",15,65,63,0);
+	write_text("D-RIGHT",15,80,63,0);
+	write_text("A-LEFT",15,95,63,0);
+	write_text("F-FLIP",15,110,63,0);
+	write_text("R-RESET",15,125,63,0);
+	write_text("L-CHANGE",15,140,63,0);
+	write_text("LEVEL",35,150,63,0);
+	write_text("X-EXIT",15,165,63,0);
 }
 
 void print_board(){
@@ -858,6 +932,13 @@ void circle(int x, int y, int color){
 	for (i=6;i<15;i++)write_pixel(i+x,16+y,color);
 	for (i=7;i<14;i++)write_pixel(i+x,17+y,color);
 
+}
+
+void panel(int x, int y, int w, int h){ //basically covers an area with a black rectangle 
+   int i,j;
+   for (i=y;i<=(y+h);i++)
+      for (j=x;j<=(x+w);j++)
+         write_pixel(j,i,35);
 }
 
 void erase(int x, int y, int w, int h){ //basically covers an area with a black rectangle 
