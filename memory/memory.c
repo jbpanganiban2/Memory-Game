@@ -1,3 +1,14 @@
+/*
+Mataya, Mark Gabriel M.
+2015-07598
+Panganiban, Joshua B.
+2015-05341
+T-5L
+
+Memory Game for ICS-OS
+
+*/
+
 #include "../../sdk/dexsdk.h"
 #include "../../sdk/time.h"
 
@@ -25,12 +36,12 @@ void print_board(); //prints the board
 void highlight(int x, int y); //highlights the current tile
 void show_score(); //shows score
 void reset(); //reset the configuration of the board
-void easy_highscores();
-void normal_highscores();
-void hard_highscores();
-void insert_highscore();
-void ask_name();
-void game_winner();
+void easy_highscores(); //display the highscores of easy level
+void normal_highscores(); //display the highscores of normal level
+void hard_highscores(); //display the highscores of hard level
+void insert_highscore(); //insert the score in highscore array
+void ask_name(); //ask name if the player got a highscore
+void game_winner(); //display prompt if the player won
 
 #define MAX_ROW 8
 #define MAX_COL 8
@@ -55,12 +66,12 @@ void game_winner();
 int board[MAX_ROW][MAX_COL]; //2d array for the board
 int x_coordinates[MAX_ROW][MAX_COL]; //2d array that contains the x_coordinates for each tile (*tile or coordinate in the board)
 int y_coordinates[MAX_ROW][MAX_COL]; //2d array that contains the x_coordinates for each tile (*tile or coordinate in the board)
-int easy_score[5];
-int normal_score[5];
-int hard_score[5];
-char easy_names[5][3];
-char normal_names[5][3];
-char hard_names[5][3];
+int easy_score[5]; //contains highscores for easy level
+int normal_score[5]; //contains highscores for normal level
+int hard_score[5]; //contains highscores for hard level
+char easy_names[5][3]; //contains names of those who got highscore for easy level
+char normal_names[5][3]; //contains names of those who got highscore for normal level
+char hard_names[5][3]; //contains names of those who got highscore for hard level
 int curr_row, curr_col, old_row, old_col;
 int level;
 int row_limit, col_limit;
@@ -91,7 +102,7 @@ int main(){
 				if(keypress==easy_level || keypress==normal_level || keypress==hard_level){ 
 					// if the player chose a level, the gameplay will start
 					erase(1,1,400,220);
-					panel(1,1,115,197);
+					panel(1,1,115,197); //display color blue panel
 					reset();
 					do{
 						
@@ -104,9 +115,7 @@ int main(){
 							}
 							old_row = curr_row;
 							old_col = curr_col;
-							if(keypress=='w'){
-								
-
+							if(keypress=='w'){ //if moved up
 								if(curr_row==0){ //the cursor will jump to the other side if moved beyond board size limit
 									curr_row=row_limit-1;
 								}
@@ -127,7 +136,7 @@ int main(){
 									board[curr_row][curr_col] += 20;
 								}
 								
-								//return the state of the tile after the highlight from cursor
+								//return the state of the (whether facedown or faceup) tile after the highlight from cursor
 								if(board[old_row][old_col]<10){
 									face_down(x_coordinates[old_row][old_col],y_coordinates[old_row][old_col]);
 								}
@@ -142,7 +151,7 @@ int main(){
 									board[old_row][old_col] += 20;
 								}
 							}
-							else if(keypress=='s'){
+							else if(keypress=='s'){ //if moved down
 								if(curr_row==row_limit-1){
 									curr_row=0;
 								}
@@ -160,7 +169,7 @@ int main(){
 									face_up(curr_row,curr_col,63);
 									board[curr_row][curr_col] += 20;
 								}
-								//
+				
 								if(board[old_row][old_col]<10){
 									face_down(x_coordinates[old_row][old_col],y_coordinates[old_row][old_col]);
 								}
@@ -175,7 +184,7 @@ int main(){
 									board[old_row][old_col] += 20;
 								}
 							}
-							else if(keypress=='d'){
+							else if(keypress=='d'){ //if moved right
 								if(curr_col==col_limit-1){
 									curr_col=0;
 								}
@@ -193,7 +202,7 @@ int main(){
 									face_up(curr_row,curr_col,63);
 									board[curr_row][curr_col] += 20;
 								}
-								//
+								
 								if(board[old_row][old_col]<10){
 									face_down(x_coordinates[old_row][old_col],y_coordinates[old_row][old_col]);
 								}
@@ -208,7 +217,7 @@ int main(){
 									board[old_row][old_col] += 20;
 								}
 							}
-							else if(keypress=='a'){
+							else if(keypress=='a'){ //if moved left
 								if(curr_col==0){
 									curr_col=col_limit-1;
 								}
@@ -244,13 +253,12 @@ int main(){
 							}
 								
 						}
-						else if(keypress=='f' && board[curr_row][curr_col]<10 && mismatch!=1){
+						else if(keypress=='f' && board[curr_row][curr_col]<10 && mismatch!=1){ //flip
 							//flip the tile based from the current position of cursor
 							rectangle(x_coordinates[curr_row][curr_col],y_coordinates[curr_row][curr_col],56);
-							//face_up(curr_row,curr_col,25);
 							
 							if(turn==1){ //if turn ==1, the first tile of the pair will be flipped 
-								//after flipping, change the value of the symbol to flipped value
+								//after flipping, change the value of the symbol to flipped value which values are >10 but <20
 								pair1_symbol = board[curr_row][curr_col];
 								board[curr_row][curr_col] +=10;
 								pair1_row = curr_row;
@@ -272,7 +280,7 @@ int main(){
 							if(turn==1) turn=2; //after flipping the first tile of the pair, change the turn to 2
 							else{
 								turn=1;
-								if(pair1_symbol == pair2_symbol){ //if the pair1_symbol(or first tile of the pair flipped) is equals to pair2_symbol(or the second tile of the pair), change the value of that symbol to guessed
+								if(pair1_symbol == pair2_symbol){ //if the pair1_symbol(or first tile of the pair flipped) is equals to pair2_symbol(or the second tile of the pair), change the value of that symbol to guessed which values are >20
 									board[pair1_row][pair1_col] +=10;
 									board[pair2_row][pair2_col] +=10;
 									score+=50;
@@ -287,16 +295,15 @@ int main(){
 								}
 								pair1_symbol =0;
 								pair2_symbol =0;
-								//block the score with black rectangles
+								//block the score with the panel's color
 								rectangle(20,20,35);
 								rectangle(40,20,35);
 								rectangle(60,20,35);
 								show_score();
 							}
 						}
-						else if(keypress=='r'){
+						else if(keypress=='r'){ //reset
 								reset();
-							
 						}
 						if(correct==((row_limit*col_limit)/2)){ //if all the tiles are correctly guessed, end game
 							game_winner();
@@ -310,18 +317,18 @@ int main(){
 			}while(keypress!=BACK && keypress!=EXIT);
 		}
 
-		else if(keypress==HELP){
+		else if(keypress==HELP){ //help
 			do{			
 				help();
 				keypress = (char)getch();
 			}while(keypress!=BACK);
 		}
 
-		else if(keypress==SCORES){
+		else if(keypress==SCORES){ //scores
 			do{
 				choose_level();
 				keypress = (char)getch();
-				//view highscores depending on the chosen level
+				//display highscores depending on the chosen level
 				if(keypress==easy_level){
 					erase(1,1,400,220);
 					do{
@@ -349,7 +356,6 @@ int main(){
 	}while(keypress!=QUIT);
 	set_graphics(VGA_TEXT80X25X16);
 	clrscr();
-
 }
 
 
@@ -415,11 +421,12 @@ void hard_highscores(){
 }
 
 
-void insert_highscore(){
+void insert_highscore(){ 
+	//insert highscores and highscore names in the arrays depending on the level
 	char temp[3],temp1[3];
 	int i,j,a,b;
 	if(level==EASY){
-		for(i=0;i<5;i++){
+		for(i=0;i<5;i++){ //place the score in the highscore array (descending order)  and name in the  name array  
 			if(score>=easy_score[i]){
 				a=easy_score[i];
 				easy_score[i]=score;
@@ -433,7 +440,7 @@ void insert_highscore(){
 				break;
 			}
 		}
-		while(i<5){
+		while(i<5){ //rearrange other scores and the last one will be removed
 			b = a;
 			for(j=0;j<3;j++){
 				temp1[j]=temp[j];
@@ -532,9 +539,9 @@ void reset(){
 	rectangle(40,20,35);
 	rectangle(60,20,35);
 	
-	initialize_board();
-	set_symbols();
-	set_coordinates();
+	initialize_board(); //initially set the 2d array of tiles/cards to 0 
+	set_symbols(); //insert values to the 2d array which will represent the symbols (values from 1-8)
+	set_coordinates(); //set the coordinates of the tiles/cards to be displayed (depending on the level chosen)
 	print_controls();
 	print_board();
 	show_symbols();
@@ -556,7 +563,7 @@ void reset(){
 	show_score();
 }
 
-void ask_name(){
+void ask_name(){ //ask the name of the player who got a highscore
 	int index=0;
 	int name_xpos=20;
 	name[3]='\0';
@@ -564,6 +571,7 @@ void ask_name(){
 	write_text("___",45,100,45,1);
 	do{
 		keypress=(char)getch();
+		//only accepts alphabet and numerical characters
 		if((keypress=='a'||keypress=='b'||keypress=='c'||keypress=='d'||keypress=='e'||keypress=='f'||keypress=='g'||keypress=='h'||keypress=='i'||keypress=='j'||keypress=='k'||keypress=='l'||keypress=='m'||keypress=='n'||keypress=='o'||keypress=='p'||keypress=='q'||keypress=='r'||keypress=='s'||keypress=='t'||keypress=='u'||keypress=='v'||keypress=='w'||keypress=='x'||keypress=='y'||keypress=='z'||keypress=='A'||keypress=='B'||keypress=='C'||keypress=='D'||keypress=='E'||keypress=='F'||keypress=='G'||keypress=='H'||keypress=='I'||keypress=='J'||keypress=='K'||keypress=='L'||keypress=='M'||keypress=='N'||keypress=='O'||keypress=='P'||keypress=='Q'||keypress=='R'||keypress=='S'||keypress=='T'||keypress=='U'||keypress=='V'||keypress=='X'||keypress=='Y'||keypress=='Z'||keypress=='W'||keypress=='1'||keypress=='2'||keypress=='3'||keypress=='4'||keypress=='5'||keypress=='6'||keypress=='7'||keypress=='8'||keypress=='9'||keypress=='0') && index<3){
 			name[index]=keypress;
 			rectangle(20,100,65);
@@ -575,7 +583,7 @@ void ask_name(){
 			index++;
 			name_xpos+=10;
 		}
-		else if(keypress=='\b' && index!=0){
+		else if(keypress=='\b' && index!=0){ //backspace to delete a character from the name
 			index--;
 			name[index]=' ';
 			name_xpos-=10;
@@ -586,15 +594,11 @@ void ask_name(){
 			write_text("___",40,100,45,1);
 			write_text(name,40,100,45,1);
 		}	
-	}while(keypress!='\n');
-	write_text("PRESS ANY",20,130,45,1);
-	write_text("KEY",45,145,45,1);
-	keypress=(char)getch();
-	keypress='a';
+	}while(keypress!='\n'); //if pressed enter then done
 	insert_highscore();
 }
 
-void game_winner(){
+void game_winner(){ //prompt the winning state with some effects
 	int a,b;
 	char string[10];
 	for(a=0;a<row_limit;a++){
@@ -618,6 +622,7 @@ void game_winner(){
 	}
 	delay(10);
 	erase(1,1,115,220); 	//erase control's side
+	//if the player got a highscore, then ask name
 	if((level==EASY && score>=easy_score[4]) || (level==NORMAL && score>=normal_score[4]) || (level==HARD && score>=hard_score[4])){
 		write_text("NEW",1,35,45,1);
 		write_text("HIGHSCORE!",30,35,45,1);
@@ -625,18 +630,16 @@ void game_winner(){
 		write_text(string,45,55,45,1);
 		ask_name();
 	}
+	//else, if the player did not get a highscore, just prompt 
 	else{
 		write_text("YOUR SCORE",12,40,45,1);
 		sprintf(string,"%d",score);
 		write_text(string,40,65,45,1);
-
-		
-		write_text("PRESS ANY",20,130,45,1);
-		write_text("KEY",45,145,45,1);
-		keypress=(char)getch();
-		keypress='a';
 	}
-
+	write_text("PRESS ANY",20,130,45,1);
+	write_text("KEY",45,145,45,1);
+	keypress=(char)getch();
+	keypress='a';
 	erase(1,1,115,220); 	//erase control's side
 }
 
@@ -646,7 +649,7 @@ void show_score(){
 	write_text(string,43,20,63,1);
 }
 
-void face_up(int row, int col, int color){
+void face_up(int row, int col, int color){ //display the symbol of the current tile/card
 
 	if(board[row][col]==1){
 		square(x_coordinates[row][col],y_coordinates[row][col],color);
@@ -674,7 +677,7 @@ void face_up(int row, int col, int color){
 	}
 }
 
-void show_symbols(){
+void show_symbols(){ //just show all the symbols before the game start, and then face down them
 	int i,j;
 
 	for(i=0; i<row_limit; i++){
@@ -707,7 +710,7 @@ void show_symbols(){
 
 }
 
-void introduction(){
+void introduction(){ //display the main/home page
 	
 	write_text("M",115,40,50,1);
 	write_text("E",125,40,51,1);
@@ -744,7 +747,7 @@ void introduction(){
 
 }
 
-void choose_level(){
+void choose_level(){ //ask the level
 	write_text("CHOOSE LEVEL",110,40,45,1);
 	write_text("1 - EASY",120,70,45,0);
 	write_text("2 - NORMAL",120,85,45,0);
@@ -753,7 +756,7 @@ void choose_level(){
 }
 
 
-void help(){
+void help(){ //display instruction
 	write_text("INSTRUCTIONS",50,10,30,1);
 	write_text("- Cards with symbols will be shown ",10,30,25,0);
 	write_text("- After a few seconds, the cards",10,45,25,0);
@@ -763,15 +766,15 @@ void help(){
 	write_text("- If they match, they will remain",10,105,25,0);
 	write_text("     face up. Otherwise, they will",10,120,25,0);
 	write_text("     be turned back over",10,135,25,0);
-	write_text("- Flip all cards before the time",10,150,25,0);
-	write_text("     runs out",10,165,25,0);
+	write_text("- The game will end if all the ",10,150,25,0);
+	write_text("     cards are face up",10,165,25,0);
 	
 
 	write_text("B - BACK",120,180,45,0);
 }
 
 
-void set_symbols(){
+void set_symbols(){ //randomize the symbols depending on level chosen
 	int row,col,tiles=0,symbol=1;
 	int i=0,j=0,a,b=0;
 	int available = 0, symbol_counter=0;
@@ -795,6 +798,7 @@ void set_symbols(){
 			row = rand()%row_limit;
 			col = rand()%col_limit;
 		//if the tile already has a symbol, find new tile
+			//if the randomized tile/card already has symbol, then just start at index 0,0 and traverse the 2d array to find empty index (or contains value 0)
 			if(board[row][col]!=0){	
 				for(i=0;i<row_limit;i++){
 					for(j=0;j<col_limit;j++){
@@ -809,13 +813,13 @@ void set_symbols(){
 				}
 			}
 				board[row][col] = symbol;
-				if(level==EASY){
+				if(level==EASY){ //for easy level, just choose symbol values from 1-4
 					if(symbol==4) symbol=0;
 				}
-				else if(level==NORMAL){
+				else if(level==NORMAL){ //for normal level, just choose symbol values from 1-6
 					if(symbol==6) symbol=0;
 				}
-				else if(level==HARD){
+				else if(level==HARD){ //for hard level, choose symbol values from 1-8
 					if(symbol==8) symbol=0;
 				}
 				symbol++;
@@ -824,7 +828,7 @@ void set_symbols(){
 			tiles+=2;
 	}
 }
-void set_coordinates(){
+void set_coordinates(){ //set the coordinates of the tiles/cards depending on the level chosen
 	int i, j, a, b;
 
 	if(level==EASY){
@@ -862,7 +866,7 @@ void set_coordinates(){
 	}
 }
 
-void initialize_board(){
+void initialize_board(){ //set the values of 2d array to 0
 	int i,j;
 	for(i=0;i<MAX_ROW;i++){
 		for(j=0;j<MAX_COL;j++){
@@ -871,8 +875,8 @@ void initialize_board(){
 	}
 }
 
-void print_controls(){
-
+void print_controls(){ //display controls & best score
+	char string[10];
 	write_text("SCORE",35,5,63,1);
 	write_text("W-UP",15,50,63,0);
 	write_text("S-DOWN",15,65,63,0);
@@ -883,9 +887,22 @@ void print_controls(){
 	write_text("L-CHANGE",15,140,63,0);
 	write_text("LEVEL",35,150,63,0);
 	write_text("X-EXIT",15,165,63,0);
+	write_text("BEST:",5,185,63,0);
+	if(level==EASY){
+		sprintf(string,"%d",easy_score[0]);
+		write_text(string,50,185,63,0);
+	}
+	else if(level==NORMAL){
+		sprintf(string,"%d",normal_score[0]);
+		write_text(string,50,185,63,0);
+	}
+	else if(level==HARD){
+		sprintf(string,"%d",hard_score[0]);
+		write_text(string,50,185,63,0);
+	}
 }
 
-void print_board(){
+void print_board(){ //display board
 	int i, j;
 	for(i=0; i<row_limit; i++){
 		for(j=0; j<col_limit; j++)
@@ -893,7 +910,7 @@ void print_board(){
 	}
 }
 
-void highlight(int x, int y){
+void highlight(int x, int y){ 
 	int i,j;
 	for (i=y;i<=(y+20);i++)
 		for (j=x;j<=(x+20);j++)
